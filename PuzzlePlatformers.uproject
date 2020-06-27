@@ -7,7 +7,10 @@
 		{
 			"Name": "PuzzlePlatformers",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
 		}
 	]
 }
