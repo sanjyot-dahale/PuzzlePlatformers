@@ -10,6 +10,19 @@ AMovingPlatform::AMovingPlatform()
 	SetMobility(EComponentMobility::Movable);
 }
 
+void AMovingPlatform::AddActiveTrigger()
+{
+	ActiveTriggers++;
+}
+
+void AMovingPlatform::RemoveActiveTrigger()
+{
+	if (ActiveTriggers >0)
+	{
+		ActiveTriggers--;
+	}
+}
+
 void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
@@ -21,6 +34,7 @@ void AMovingPlatform::BeginPlay()
 	/// Which makes sense as we don't want Clients to update data on the Server,
 	/// but Vice-Versa.
 	/// </summary>
+	
 	if (HasAuthority())
 	{
 		SetReplicates(true);
@@ -36,21 +50,25 @@ void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/// HasAuthority() return TRUE if the instance of the game is the Server.
-	if (HasAuthority())
+	if (ActiveTriggers > 0)
 	{
-		FVector Location = GetActorLocation();
-		float JourneyLength = (GlobalTargetLocation - GlobalStartLocation).Size();
-		float JourneyTravelled = (Location - GlobalStartLocation).Size();
-		if (JourneyTravelled >= JourneyLength)
+
+		/// HasAuthority() return TRUE if the instance of the game is the Server.
+		if (HasAuthority())
 		{
-			FVector Swap = GlobalStartLocation;
-			GlobalStartLocation = GlobalTargetLocation;
-			GlobalTargetLocation = Swap;
+			FVector Location = GetActorLocation();
+			float JourneyLength = (GlobalTargetLocation - GlobalStartLocation).Size();
+			float JourneyTravelled = (Location - GlobalStartLocation).Size();
+			if (JourneyTravelled >= JourneyLength)
+			{
+				FVector Swap = GlobalStartLocation;
+				GlobalStartLocation = GlobalTargetLocation;
+				GlobalTargetLocation = Swap;
+			}
+			FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
+			Location += Speed * DeltaTime * Direction;
+			SetActorLocation(Location);
 		}
-		FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
-		Location += Speed * DeltaTime * Direction;
-		SetActorLocation(Location);
 	}
 
 }
