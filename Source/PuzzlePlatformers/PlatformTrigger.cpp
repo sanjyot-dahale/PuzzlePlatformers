@@ -38,9 +38,9 @@ void APlatformTrigger::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
 void APlatformTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Activated"));
 	for (AMovingPlatform* Platform : PlatformsToTrigger)
 	{
 		Platform->AddActiveTrigger();
